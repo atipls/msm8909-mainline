@@ -102,6 +102,56 @@
 		interrupts = <GIC_PPI 7 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 	};
 
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		tz-apps@87a00000 {
+			reg = <0x87a00000 0x200000>;
+			no-map;
+		};
+		rmtfs@87c00000 {
+			compatible = "qcom,rmtfs-mem";
+			reg = <0x87c00000 0xe0000>;
+			no-map;
+
+			qcom,client-id = <1>;
+		};
+		rfsa@87ce0000 {
+			reg = <0x87ce0000 0x20000>;
+			no-map;
+		};
+		smem@87d00000 {
+			compatible = "qcom,smem";
+			reg = <0x87d00000 0x100000>;
+			no-map;
+
+			hwlocks = <&tcsr_mutex 3>;
+		};
+		tz@87e00000 {
+			reg = <0x87e00000 0x200000>;
+			no-map;
+		};
+	};
+
+	smd {
+		compatible = "qcom,smd";
+	};
+
+	smsm {
+		compatible = "qcom,smsm";
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		apps_smsm: apps@0 {
+			reg = <0>;
+
+			#qcom,smem-state-cells = <1>;
+		};
+	};
+
 	soc: soc@0 {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -491,6 +541,17 @@
 			clock-names = "xo", "sleep_clk", "dsi0pll", "dsi0pllbyte";
 		};
 
+		tcsr_mutex: hwlock@1905000 {
+			compatible = "qcom,tcsr-mutex";
+			reg = <0x01905000 0x20000>;
+			#hwlock-cells = <1>;
+		};
+
+		tcsr: syscon@1937000 {
+			compatible = "qcom,tcsr-msm8909", "syscon";
+			reg = <0x01937000 0x30000>;
+		};
+
 		sdhc_1: sdhci@7824000 {
 			compatible = "qcom,msm8909-sdhci", "qcom,sdhci-msm-v4";
 			reg = <0x07824900 0x11c>, <0x07824000 0x800>;
@@ -786,6 +847,12 @@
 			      <0x0b002000 0x1000>;
 			interrupt-controller;
 			#interrupt-cells = <3>;
+		};
+
+		apcs: mailbox@b011000 {
+			compatible = "qcom,msm8916-apcs-kpss-global", "syscon";
+			reg = <0x0b011000 0x1000>;
+			#mbox-cells = <1>;
 		};
 
 		timer@b020000 {
