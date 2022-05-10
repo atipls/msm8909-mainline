@@ -34,6 +34,63 @@
 		};
 	};
 
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			reg = <0x0>;
+			next-level-cache = <&L2_0>;
+			enable-method = "qcom,msm8909-smp";
+			qcom,acc = <&cpu0_acc>;
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			reg = <0x1>;
+			next-level-cache = <&L2_0>;
+			enable-method = "qcom,msm8909-smp";
+			qcom,acc = <&cpu1_acc>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			reg = <0x2>;
+			next-level-cache = <&L2_0>;
+			enable-method = "qcom,msm8909-smp";
+			qcom,acc = <&cpu2_acc>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			reg = <0x3>;
+			next-level-cache = <&L2_0>;
+			enable-method = "qcom,msm8909-smp";
+			qcom,acc = <&cpu3_acc>;
+		};
+
+		L2_0: l2-cache {
+			compatible = "cache";
+			cache-level = <2>;
+		};
+	};
+
+	firmware {
+		scm: scm {
+			compatible = "qcom,scm-msm8916", "qcom,scm";
+			clocks = <&gcc GCC_CRYPTO_CLK>,
+				 <&gcc GCC_CRYPTO_AXI_CLK>,
+				 <&gcc GCC_CRYPTO_AHB_CLK>;
+			clock-names = "core", "bus", "iface";
+			qcom,dload-mode = <&tcsr 0x6100>;
+		};
+	};
+
 	memory@80000000 {
 		device_type = "memory";
 		/* We expect the bootloader to fill in the reg */
@@ -264,6 +321,23 @@
 				frame-number = <6>;
 				status = "disabled";
 			};
+		};
+
+		cpu0_acc: power-manager@b088000 {
+			compatible = "qcom,msm8909-acc";
+			reg = <0x0b088000 0x1000>;
+		};
+		cpu1_acc: power-manager@b098000 {
+			compatible = "qcom,msm8909-acc";
+			reg = <0x0b098000 0x1000>;
+		};
+		cpu2_acc: power-manager@b0a8000 {
+			compatible = "qcom,msm8909-acc";
+			reg = <0x0b0a8000 0x1000>;
+		};
+		cpu3_acc: power-manager@b0b8000 {
+			compatible = "qcom,msm8909-acc";
+			reg = <0x0b0b8000 0x1000>;
 		};
 	};
 
