@@ -46,7 +46,9 @@
 			reg = <0x0>;
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
+			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu0_acc>;
+			qcom,saw = <&cpu0_saw>;
 		};
 
 		cpu1: cpu@1 {
@@ -55,7 +57,9 @@
 			reg = <0x1>;
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
+			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu1_acc>;
+			qcom,saw = <&cpu1_saw>;
 		};
 
 		cpu2: cpu@2 {
@@ -64,7 +68,9 @@
 			reg = <0x2>;
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
+			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu2_acc>;
+			qcom,saw = <&cpu2_saw>;
 		};
 
 		cpu3: cpu@3 {
@@ -73,12 +79,25 @@
 			reg = <0x3>;
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
+			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu3_acc>;
+			qcom,saw = <&cpu3_saw>;
 		};
 
 		L2_0: l2-cache {
 			compatible = "cache";
 			cache-level = <2>;
+		};
+
+		idle-states {
+			CPU_SLEEP_0: cpu-sleep-0 {
+				compatible = "qcom,idle-state-spc";
+				idle-state-name = "standalone-power-collapse";
+				entry-latency-us = <180>;
+				exit-latency-us = <240>;
+				min-residency-us = <1260>;
+				local-timer-stop;
+			};
 		};
 	};
 
@@ -1268,17 +1287,33 @@
 			compatible = "qcom,msm8909-acc";
 			reg = <0x0b088000 0x1000>;
 		};
+		cpu0_saw: power-manager@b089000 {
+			compatible = "qcom,msm8909-saw2-v3.0-cpu", "qcom,saw2";
+			reg = <0x0b089000 0x1000>;
+		};
 		cpu1_acc: power-manager@b098000 {
 			compatible = "qcom,msm8909-acc";
 			reg = <0x0b098000 0x1000>;
+		};
+		cpu1_saw: power-manager@b099000 {
+			compatible = "qcom,msm8909-saw2-v3.0-cpu", "qcom,saw2";
+			reg = <0x0b099000 0x1000>;
 		};
 		cpu2_acc: power-manager@b0a8000 {
 			compatible = "qcom,msm8909-acc";
 			reg = <0x0b0a8000 0x1000>;
 		};
+		cpu2_saw: power-manager@b0a9000 {
+			compatible = "qcom,msm8909-saw2-v3.0-cpu", "qcom,saw2";
+			reg = <0x0b0a9000 0x1000>;
+		};
 		cpu3_acc: power-manager@b0b8000 {
 			compatible = "qcom,msm8909-acc";
 			reg = <0x0b0b8000 0x1000>;
+		};
+		cpu3_saw: power-manager@b0b9000 {
+			compatible = "qcom,msm8909-saw2-v3.0-cpu", "qcom,saw2";
+			reg = <0x0b0b9000 0x1000>;
 		};
 	};
 
