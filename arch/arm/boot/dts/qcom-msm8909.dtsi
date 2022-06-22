@@ -46,6 +46,7 @@
 			reg = <0x0>;
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
+			clocks = <&apcs>;
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu0_acc>;
 			qcom,saw = <&cpu0_saw>;
@@ -57,6 +58,7 @@
 			reg = <0x1>;
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
+			clocks = <&apcs>;
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu1_acc>;
 			qcom,saw = <&cpu1_saw>;
@@ -68,6 +70,7 @@
 			reg = <0x2>;
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
+			clocks = <&apcs>;
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu2_acc>;
 			qcom,saw = <&cpu2_saw>;
@@ -79,6 +82,7 @@
 			reg = <0x3>;
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
+			clocks = <&apcs>;
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu3_acc>;
 			qcom,saw = <&cpu3_saw>;
@@ -1224,6 +1228,38 @@
 			compatible = "qcom,msm8916-apcs-kpss-global", "syscon";
 			reg = <0x0b011000 0x1000>;
 			#mbox-cells = <1>;
+			clocks = <&a7pll>, <&gcc GPLL0>;
+			clock-names = "pll", "aux";
+			#clock-cells = <0>;
+		};
+
+		a7pll: clock@b016000 {
+			compatible = "qcom,msm8916-a53pll";
+			reg = <0x0b016000 0x40>;
+			#clock-cells = <0>;
+			clocks = <&xo_board>;
+			clock-names = "xo";
+			operating-points-v2 = <&a7pll_opp_table>;
+
+			a7pll_opp_table: opp-table {
+				compatible = "operating-points-v2";
+
+				opp-998400000 {
+					opp-hz = /bits/ 64 <998400000>;
+				};
+				opp-1094400000 {
+					opp-hz = /bits/ 64 <1094400000>;
+				};
+				opp-1190400000 {
+					opp-hz = /bits/ 64 <1190400000>;
+				};
+				opp-1248000000 {
+					opp-hz = /bits/ 64 <1267200000>;
+				};
+				opp-1305600000 {
+					opp-hz = /bits/ 64 <1305600000>;
+				};
+			};
 		};
 
 		timer@b020000 {
