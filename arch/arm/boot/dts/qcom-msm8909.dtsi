@@ -9,6 +9,7 @@
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/power/qcom-rpmpd.h>
+#include <dt-bindings/thermal/thermal.h>
 
 / {
 	#address-cells = <1>;
@@ -47,6 +48,7 @@
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
 			clocks = <&apcs>;
+			#cooling-cells = <2>;
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu0_acc>;
 			qcom,saw = <&cpu0_saw>;
@@ -59,6 +61,7 @@
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
 			clocks = <&apcs>;
+			#cooling-cells = <2>;
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu1_acc>;
 			qcom,saw = <&cpu1_saw>;
@@ -71,6 +74,7 @@
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
 			clocks = <&apcs>;
+			#cooling-cells = <2>;
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu2_acc>;
 			qcom,saw = <&cpu2_saw>;
@@ -83,6 +87,7 @@
 			next-level-cache = <&L2_0>;
 			enable-method = "qcom,msm8909-smp";
 			clocks = <&apcs>;
+			#cooling-cells = <2>;
 			cpu-idle-states = <&CPU_SLEEP_0>;
 			qcom,acc = <&cpu3_acc>;
 			qcom,saw = <&cpu3_saw>;
@@ -320,6 +325,20 @@
 			clock-names = "core";
 		};
 
+		qfprom: qfprom@5c000 {
+			compatible = "qcom,qfprom";
+			reg = <0x0005c000 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			tsens_caldata: caldata@a0 {
+				reg = <0xa0 0x8>;
+			};
+			tsens_calsel: calsel@dc {
+				reg = <0xdc 0x4>;
+			};
+		};
+
 		rpm_msg_ram: sram@60000 {
 			compatible = "qcom,rpm-msg-ram";
 			reg = <0x00060000 0x8000>;
@@ -328,6 +347,18 @@
 		sram@290000 {
 			compatible = "qcom,rpm-stats";
 			reg = <0x00290000 0x10000>;
+		};
+
+		tsens: thermal-sensor@4a9000 {
+			compatible = "qcom,msm8909-tsens", "qcom,tsens-v0_1";
+			reg = <0x004a9000 0x1000>, /* TM */
+			      <0x004a8000 0x1000>; /* SROT */
+			nvmem-cells = <&tsens_caldata>, <&tsens_calsel>;
+			nvmem-cell-names = "calib", "calib_sel";
+			interrupts = <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "uplow";
+			#thermal-sensor-cells = <1>;
+			#qcom,sensors = <5>;
 		};
 
 		restart@4ab000 {
@@ -1351,6 +1382,114 @@
 			compatible = "qcom,msm8909-saw2-v3.0-cpu", "qcom,saw2";
 			reg = <0x0b0b9000 0x1000>;
 		};
+	};
+
+	thermal-zones {
+		cpu0-2-thermal {
+			polling-delay-passive = <250>;
+			polling-delay = <0>;
+
+			thermal-sensors = <&tsens 3>;
+
+			trips {
+				cpu0_2_alert0: trip-point0 {
+					temperature = <85000>;
+					hysteresis = <2000>;
+					type = "passive";
+				};
+				cpu0_2_crit: cpu_crit {
+					temperature = <100000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&cpu0_2_alert0>;
+					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		cpu1-3-thermal {
+			polling-delay-passive = <250>;
+			polling-delay = <0>;
+
+			thermal-sensors = <&tsens 4>;
+
+			trips {
+				cpu1_3_alert0: trip-point0 {
+					temperature = <85000>;
+					hysteresis = <2000>;
+					type = "passive";
+				};
+				cpu1_3_crit: cpu_crit {
+					temperature = <100000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&cpu1_3_alert0>;
+					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+							 <&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		gpu-thermal {
+			polling-delay-passive = <250>;
+			polling-delay = <0>;
+
+			thermal-sensors = <&tsens 2>;
+
+			trips {
+				gpu_alert0: trip-point0 {
+					temperature = <90000>;
+					hysteresis = <2000>;
+					type = "hot";
+				};
+			};
+		};
+
+		camera-thermal {
+			polling-delay-passive = <250>;
+			polling-delay = <0>;
+
+			thermal-sensors = <&tsens 1>;
+
+			trips {
+				cam_alert0: trip-point0 {
+					temperature = <85000>;
+					hysteresis = <2000>;
+					type = "hot";
+				};
+			};
+		};
+
+		modem-thermal {
+			polling-delay-passive = <250>;
+			polling-delay = <0>;
+
+			thermal-sensors = <&tsens 0>;
+
+			trips {
+				modem_alert0: trip-point0 {
+					temperature = <85000>;
+					hysteresis = <2000>;
+					type = "hot";
+				};
+			};
+		};
+
 	};
 
 	timer {
