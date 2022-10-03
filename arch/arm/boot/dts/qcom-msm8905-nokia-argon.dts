@@ -47,6 +47,124 @@
 			<3612000 4>, <3554000 3>, <3462000 2>, <3322000 1>,
 			<3000000 0>;
 	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&gpio_key_active &lid_switch_active>;
+
+		keypad_up {
+			label = "keypad_up";
+			wakeup-source;
+			gpios = <&tlmm 90 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_UP>;
+			debounce-interval = <15>;
+			linux,can-disable;
+		};
+
+		keypad_back {
+			label = "keypad_back";
+			wakeup-source;
+			gpios = <&tlmm 98 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_BACKSPACE>;
+			debounce-interval = <15>;
+			linux,can-disable;
+		};
+
+		lid_close_switch {
+			label = "lid_close_switch";
+			wakeup-source;
+			gpios = <&tlmm 92 GPIO_ACTIVE_LOW>;
+			linux,input-type = <EV_SW>;
+			linux,code = <SW_LID>;
+		};
+
+		lid_open_switch {
+			label = "lid_open_switch";
+			gpios = <&tlmm 36 GPIO_ACTIVE_LOW>;
+			linux,input-type = <EV_SW>;
+			linux,code = <SW_KEYPAD_SLIDE>;
+		};
+	};
+
+	matrix_keypad: matrix_keypad@0 {
+		compatible = "gpio-matrix-keypad";
+		gpio-activelow;
+		debounce-delay-ms = <10>;
+		col-scan-delay-ms = <7>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&matrix_keypad_row_default &matrix_keypad_col_default>;
+
+		row-gpios = <&tlmm 97 0
+			&tlmm 96 0
+			&tlmm 95 0
+			&tlmm 94 0>;
+
+		col-gpios = <&tlmm 52 0
+			&tlmm 56 0
+			&tlmm 7 0
+			&tlmm 99 0
+			&tlmm 6 0>;
+
+		linux,keymap = <
+			0x0000003D      /* (0,0) KEY_F3 */
+			0x00010002      /* (1,0) KEY_1 */
+			0x00020005      /* (2,0) KEY_4 */
+			0x00030008      /* (3,0) KEY_7 */
+			0x0004020A      /* (4,0) KEY_NUMERIC_STAR */
+
+			0x01000069      /* (0,1) KEY_LEFT */
+			0x01010003      /* (1,1) KEY_2 */
+			0x01020006      /* (2,1) KEY_5 */
+			0x01030009      /* (3,1) KEY_8 */
+			0x0104000B      /* (4,1) KEY_0 */
+
+			0x0200000F      /* (0,2) KEY_TAB */
+			0x02010004      /* (1,2) KEY_3 */
+			0x02020007      /* (2,2) KEY_6 */
+			0x0203000A      /* (3,2) KEY_9 */
+			0x0204020B      /* (4,2) KEY_NUMERIC_POUND */
+
+			0x0300001C      /* (0,3) KEY_ENTER */
+			0x0301006A      /* (1,3) KEY_RIGHT */
+			0x0302008B      /* (3,3) KEY_MENU */
+			>;
+	};
+};
+
+&pm8909_resin {
+	status = "okay";
+	linux,code = <KEY_DOWN>;
+};
+
+&tlmm {
+	gpio_key_active: gpio_key_active {
+		pins = "gpio90", "gpio98";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+	lid_switch_active: lid_switch_active {
+		pins = "gpio36", "gpio92";
+		function = "gpio";
+
+		drive-strength = <6>;
+		bias-pull-up;
+	};
+	matrix_keypad_row_default: matrix_keypad_row_default {
+		pins = "gpio94", "gpio95", "gpio96", "gpio97";
+		function = "gpio";
+
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+	matrix_keypad_col_default: matrix_keypad_col_default {
+		pins = "gpio52", "gpio56", "gpio7", "gpio99", "gpio6";
+		function = "gpio";
+
+		drive-strength = <2>;
+		bias-disable;
+		output-low;
+	};
 };
 
 &blsp_uart1 {
