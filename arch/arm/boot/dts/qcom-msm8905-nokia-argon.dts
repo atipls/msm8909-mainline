@@ -216,7 +216,7 @@
 &blsp_spi5 {
 	status = "okay";
 	display@0 {
-		compatible = "gc9305", "panel-mipi-dbi-spi";
+		compatible = "nokia,argon-gc9305-v2-panel", "panel-mipi-dbi-spi";
 		reg = <0>;
 		//te-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&tlmm 25 GPIO_ACTIVE_HIGH>;

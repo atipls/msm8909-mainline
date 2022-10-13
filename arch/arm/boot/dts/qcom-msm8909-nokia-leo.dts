@@ -206,7 +206,7 @@
 &blsp_spi5 {
 	status = "okay";
 	display@0 {
-		compatible = "gc9307", "panel-mipi-dbi-spi";
+		compatible = "nokia,leo-gc9307-hlt-panel", "panel-mipi-dbi-spi";
 		reg = <0>;
 		//te-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&tlmm 25 GPIO_ACTIVE_HIGH>;
