@@ -7,8 +7,8 @@
 #include <dt-bindings/pinctrl/qcom,pmic-mpp.h>
 
 / {
-	model = "Nokia 6300 4G (leo)";
-	compatible = "nokia,leo", "qcom,msm8909";
+	model = "Nokia 8000 4G (sparkler)";
+	compatible = "nokia,sparkler", "qcom,msm8909";
 
 	aliases {
 		serial0 = &blsp_uart1;
@@ -109,32 +109,32 @@
 			&tlmm 1 0>;
 
 		linux,keymap = <
-			0x0000000F      /* (0,0) KEY_TAB */
+			0x0000003D      /* (0,0) KEY_F3 */
 			0x00010002      /* (1,0) KEY_1 */
 			0x00020005      /* (2,0) KEY_4 */
 			0x00030008      /* (3,0) KEY_7 */
 			0x0004020A      /* (4,0) KEY_NUMERIC_STAR */
-			0x0005003D      /* (5,0) KEY_F3 */
+			0x000500D2      /* (5,0) KEY_PRINT */
 
-			0x010000D2      /* (0,1) KEY_PRINT */
+			0x0100000F      /* (0,1) KEY_TAB */
 			0x01010003      /* (1,1) KEY_2 */
 			0x01020006      /* (2,1) KEY_5 */
 			0x01030009      /* (3,1) KEY_8 */
 			0x0104000B      /* (4,1) KEY_0 */
-			0x01050001      /* (5,1) KEY_ESC */
+			0x0105000E      /* (5,1) KEY_BACKSPACE */
 
 			0x02000069      /* (0,2) KEY_LEFT */
 			0x02010004      /* (1,2) KEY_3 */
 			0x02020007      /* (2,2) KEY_6 */
 			0x0203000A      /* (3,2) KEY_9 */
 			0x0204020B      /* (4,2) KEY_NUMERIC_POUND */
-			0x0205008B      /* (5,2) KEY_MENU */
+			0x02050001      /* (5,2) KEY_ESC */
 
-			0x0300006C      /* (0,3) KEY_DOWN */
-			0x0301000E      /* (1,3) KEY_BACKSPACE */
+			0x0300001C      /* (0,3) KEY_ENTER */
+			0x0301008B      /* (1,3) KEY_MENU */
 			0x0302006A      /* (2,3) KEY_RIGHT */
-			0x0303001C      /* (3,3) KEY_ENTER */
-			0x03040067      /* (4,3) KEY_UP */
+			0x03030067      /* (3,3) KEY_UP */
+			0x0304006C      /* (4,3) KEY_DOWN */
 			>;
 	};
 };
@@ -233,7 +233,7 @@
 &blsp_spi5 {
 	status = "okay";
 	display@0 {
-		compatible = "nokia,leo-gc9305-hlt-24-panel", "panel-mipi-dbi-spi";
+		compatible = "nokia,sparkler-gc9307-hlt-28-panel", "panel-mipi-dbi-spi";
 		reg = <0>;
 		backlight = <&backlight>;
 		//te-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
