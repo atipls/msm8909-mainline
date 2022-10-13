@@ -4,6 +4,7 @@
 #include <dt-bindings/sound/qcom,q6afe.h>
 #include <dt-bindings/sound/qcom,q6asm.h>
 #include <dt-bindings/sound/qcom,q6voice.h>
+#include <dt-bindings/pinctrl/qcom,pmic-mpp.h>
 
 / {
 	model = "Nokia 8110 4G (argon)";
@@ -46,6 +47,15 @@
 			<3685000 8>, <3683000 7>, <3677000 6>, <3656000 5>,
 			<3612000 4>, <3554000 3>, <3462000 2>, <3322000 1>,
 			<3000000 0>;
+	};
+
+	backlight: backlight {
+		compatible = "pwm-backlight";
+		pwms = <&pm8909_pwm 0 100000>;
+
+		brightness-levels = <0 4 8 16 32 64 128 255>;
+		num-interpolated-steps = <2>;
+		default-brightness-level = <10>;
 	};
 
 	gpio_keys {
@@ -132,6 +142,12 @@
 	};
 };
 
+&pm8909_pwm {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm_out>;
+};
+
 &pm8909_resin {
 	status = "okay";
 	linux,code = <KEY_DOWN>;
@@ -164,6 +180,17 @@
 		drive-strength = <2>;
 		bias-disable;
 		output-low;
+	};
+};
+
+&pm8909_mpps {
+	pwm_out: mpp2 {
+		pins = "mpp2";
+		function = "digital";
+
+		output-low;
+		qcom,dtest = <1>;
+		power-source = <PM8916_MPP_VPH>;
 	};
 };
 
@@ -218,6 +245,7 @@
 	display@0 {
 		compatible = "nokia,argon-gc9305-v2-panel", "panel-mipi-dbi-spi";
 		reg = <0>;
+		backlight = <&backlight>;
 		//te-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&tlmm 25 GPIO_ACTIVE_HIGH>;
 		dc-gpios = <&tlmm 110 GPIO_ACTIVE_HIGH>;
