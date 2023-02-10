@@ -20,9 +20,9 @@ jobs:
               run: |
                 sudo apt update && sudo apt install -y build-essential crossbuild-essential-armhf bc wget bison flex libssl-dev
 
-            - name: Get the config
+            - name: Generate the config
               run: |
-                wget -O.config https://storage.abscue.de/private/zImage/msm8909-mainline-config
+                make ARCH=arm msm8909_mainline_defconfig
 
             - name: Build the kernel
               run: |
@@ -41,4 +41,3 @@ jobs:
                     arch/arm/boot/dts/qcom-*.dtb
                     tmp_modules/lib/modules/*/kernel/
                     tmp_modules/lib/modules/*/modules.*
-                   
