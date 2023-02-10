@@ -1,0 +1,44 @@
+name: Build
+
+on:
+    push:
+        branches:
+            - '**'
+
+env:
+    CROSS_COMPILE: arm-linux-gnueabihf-
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Install dependencies
+              run: |
+                sudo apt update && sudo apt install -y build-essential crossbuild-essential-armhf bc wget bison flex libssl-dev
+
+            - name: Get the config
+              run: |
+                wget -O.config https://storage.abscue.de/private/zImage/msm8909-mainline-config
+
+            - name: Build the kernel
+              run: |
+                make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE
+
+            - name: Build the modules
+              run: |
+                make modules_install INSTALL_MOD_PATH=$(pwd)/tmp_modules
+
+            - name: Store the build artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                  name: build-output
+                  path: |
+                    arch/arm/boot/zImage
+                    arch/arm/boot/dts/qcom-*.dtb
+                    tmp_modules/lib/modules/*/kernel/
+                    tmp_modules/lib/modules/*/modules.*
+                   
