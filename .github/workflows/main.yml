@@ -22,15 +22,15 @@ jobs:
 
             - name: Generate the config
               run: |
-                make ARCH=arm msm8909_mainline_defconfig
+                make ARCH=arm msm8909_mainline_defconfig -j
 
             - name: Build the kernel
               run: |
-                make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE
+                make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE -j
 
             - name: Build the modules
               run: |
-                make modules_install INSTALL_MOD_PATH=$(pwd)/tmp_modules
+                make modules_install INSTALL_MOD_PATH=$(pwd)/tmp_modules -j
 
             - name: Copy the artifacts
               run: |
@@ -52,7 +52,7 @@ jobs:
                     tmp_modules/lib/modules/*/kernel/
                     tmp_modules/lib/modules/*/modules.*
 
-            - name: Upload the artifacts to s3
+            - name: Upload the artifacts to S3
               uses: shallwefootball/s3-upload-action@master
               id: S3
               with:
