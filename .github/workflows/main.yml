@@ -22,15 +22,15 @@ jobs:
 
             - name: Generate the config
               run: |
-                make ARCH=arm msm8909_mainline_defconfig -j
+                make ARCH=arm msm8909_mainline_defconfig
 
             - name: Build the kernel
               run: |
-                make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE -j
+                make ARCH=arm CROSS_COMPILE=$CROSS_COMPILE
 
             - name: Build the modules
               run: |
-                make modules_install INSTALL_MOD_PATH=$(pwd)/tmp_modules -j
+                make modules_install INSTALL_MOD_PATH=$(pwd)/tmp_modules
 
             - name: Copy the artifacts
               run: |
