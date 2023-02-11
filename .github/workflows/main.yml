@@ -32,6 +32,16 @@ jobs:
               run: |
                 make modules_install INSTALL_MOD_PATH=$(pwd)/tmp_modules
 
+            - name: Copy the artifacts
+              run: |
+                mkdir output
+                mkdir output/dts
+                mkdir output/modules
+
+                cp arch/arm/boot/zImage output/zImage
+                cp arch/arm/boot/dts/qcom-*.dtb output/dts/
+                cp -r tmp_modules/lib/modules/* output/modules/
+
             - name: Store the build artifacts
               uses: actions/upload-artifact@v3
               with:
@@ -41,3 +51,13 @@ jobs:
                     arch/arm/boot/dts/qcom-*.dtb
                     tmp_modules/lib/modules/*/kernel/
                     tmp_modules/lib/modules/*/modules.*
+
+            - name: Upload the artifacts to s3
+              uses: shallwefootball/s3-upload-action@master
+              id: S3
+              with:
+                  aws_key_id: ${{ secrets.AWS_KEY_ID }}
+                  aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws_bucket: ${{ secrets.AWS_BUCKET }}
+                  source_dir: 'output'
+                  destination_dir: 'nokia-leo'
