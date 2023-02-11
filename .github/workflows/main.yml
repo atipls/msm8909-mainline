@@ -31,6 +31,7 @@ jobs:
             - name: Build the modules
               run: |
                 make modules_install INSTALL_MOD_PATH=$(pwd)/tmp_modules
+                find tmp_modules/lib/modules/ -type l -delete
 
             - name: Copy the artifacts
               run: |
@@ -38,26 +39,29 @@ jobs:
                 mkdir output/dts
                 mkdir output/modules
 
-                cp arch/arm/boot/zImage output/zImage
-                cp arch/arm/boot/dts/qcom-*.dtb output/dts/
-                cp -r tmp_modules/lib/modules/* output/modules/
+                cp -v arch/arm/boot/zImage output/zImage
+                cp -v arch/arm/boot/dts/qcom-*.dtb output/dts/
+                cp -rv tmp_modules/lib/modules/* output/modules/
+
+            - name: Show me everything that's in the artifacts
+              run: |
+                ls -R output/
 
             - name: Store the build artifacts
               uses: actions/upload-artifact@v3
               with:
                   name: build-output
-                  path: |
-                    arch/arm/boot/zImage
-                    arch/arm/boot/dts/qcom-*.dtb
-                    tmp_modules/lib/modules/*/kernel/
-                    tmp_modules/lib/modules/*/modules.*
+                  path: output/
 
             - name: Upload the artifacts to S3
-              uses: shallwefootball/s3-upload-action@master
-              id: S3
-              with:
+              shell: bash
+              env:
                   aws_key_id: ${{ secrets.AWS_KEY_ID }}
                   aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws_bucket: ${{ secrets.AWS_BUCKET }}
-                  source_dir: 'output'
-                  destination_dir: 'nokia-leo'
+                  aws_s3_bucket: ${{ secrets.AWS_BUCKET }}
+              run: |
+                sudo apt-get update && sudo apt-get -y install awscli
+                aws configure set aws_access_key_id $aws_key_id
+                aws configure set aws_secret_access_key $aws_secret_access_key
+                aws configure set default.region eu-central-1
+                aws s3 output/ s3://$aws_s3_bucket/nokia-leo/
